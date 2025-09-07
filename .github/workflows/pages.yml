@@ -1,8 +1,8 @@
-name: Deploy to GitHub Pages
+name: GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -18,22 +18,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Upload static site
+      - uses: actions/checkout@v4
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: .  # リポジトリ直下に index.html がある想定
 
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
     steps:
-      - name: Setup Pages
+      - name: Configure Pages (auto-enable)
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
